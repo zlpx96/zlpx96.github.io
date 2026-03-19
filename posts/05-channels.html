@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>接入微信、飞书、钉钉：让OpenClaw成为你的工作助手 - 飘雪思考</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="inner">
+    <a href="../" class="site-title"><span>飘雪</span>思考</a>
+    <nav class="site-nav">
+      <a href="../">首页</a>
+      <a href="https://github.com/zlpx96" target="_blank">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <article>
+    <div class="article-header">
+      <a href="../" class="back">&larr; 返回文章列表</a>
+      <h1>接入微信、飞书、钉钉：让OpenClaw成为你的工作助手</h1>
+      <div class="meta">飘雪思考 &middot; OpenClaw从入门到精通系列</div>
+    </div>
+    <div class="article-body">
+<h2>20+渠道，统一一套流程</h2>
+<p>OpenClaw通过Gateway架构统一连接20+聊天平台。所有渠道共享同一套接入模式：</p>
+<p><strong>创建凭证 -&gt; 写入openclaw.yaml -&gt; 启动Gateway -&gt; 完成配对</strong></p>
+<p>可以同时运行多个Channel，消息自动路由到对应平台。你在Telegram问的问题和在飞书聊的内容，共享同一个Agent的记忆。</p>
+<hr />
+<h2>四个梯队：从5分钟到1小时</h2>
+<table>
+<thead>
+<tr>
+<th>梯队</th>
+<th>平台</th>
+<th>耗时</th>
+<th>推荐理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>第一梯队</strong></td>
+<td>Telegram、QQ</td>
+<td>5-10分钟</td>
+<td>Telegram不需公网IP，本地long-polling即可。QQ有腾讯官方支持，扫码1分钟绑定</td>
+</tr>
+<tr>
+<td><strong>第二梯队</strong></td>
+<td>Discord、飞书</td>
+<td>15-20分钟</td>
+<td>Discord文档齐全。飞书自OpenClaw 2026.2起内置支持</td>
+</tr>
+<tr>
+<td><strong>第三梯队</strong></td>
+<td>WhatsApp、Slack、钉钉、企微</td>
+<td>25-40分钟</td>
+<td>WhatsApp最受欢迎但session可能过期。钉钉和企微社区插件成熟</td>
+</tr>
+<tr>
+<td><strong>第四梯队</strong></td>
+<td>iMessage、微信个人号</td>
+<td>30分钟-1小时+</td>
+<td>iMessage需Mac常开。微信个人号没有官方API，封号风险始终存在</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Telegram：零门槛入门（推荐第一个接入）</h2>
+<p>Telegram是OpenClaw官方推荐的入门渠道。使用long-polling模式，bot主动轮询服务器拉取消息，不需要公网IP、反向代理或端口转发。</p>
+<p><strong>步骤：</strong></p>
+<ol>
+<li>在Telegram搜索<code>@BotFather</code>，发送<code>/newbot</code></li>
+<li>设置bot名称和username（必须以bot结尾，如<code>my_openclaw_bot</code>）</li>
+<li>复制BotFather返回的Bot Token</li>
+<li>写入配置：</li>
+</ol>
+<div class="codehilite"><pre><span></span><code><span class="nt">channels</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">telegram</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">botToken</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;YOUR_BOT_TOKEN&quot;</span>
+<span class="w">    </span><span class="nt">dmPolicy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pairing</span>
+</code></pre></div>
+
+<ol>
+<li>重启Gateway，给bot发消息，输入配对码完成绑定</li>
+</ol>
+<p><strong>5分钟搞定。</strong> 国内用户需要代理访问Telegram，但bot运行本身不受影响——只要Gateway所在机器能访问<code>api.telegram.org</code>。</p>
+<hr />
+<h2>QQ：国内首选，扫码即用</h2>
+<p>腾讯官方开放了QQ Bot能力给OpenClaw，是国内用户最简单的接入方式。</p>
+<ol>
+<li>用手机QQ扫码完成开发者注册</li>
+<li>在QQ开放平台一键创建Bot，获取App ID和Token</li>
+<li>在OpenClaw中完成配置绑定</li>
+</ol>
+<p>支持Markdown、图片、语音、文件等多媒体消息。手机QQ和桌面QQ均可使用。单个账号最多创建5个Bot。</p>
+<hr />
+<h2>飞书：国内企业首选</h2>
+<p>飞书自OpenClaw 2026.2起获得原生内置支持，使用WebSocket事件订阅，支持私聊、群聊、多媒体消息。</p>
+<ol>
+<li>在飞书开放平台（open.feishu.cn）创建企业自建应用，获取App ID和App Secret</li>
+<li>运行<code>openclaw onboard</code>，选择Feishu channel，粘贴凭证</li>
+<li>重启Gateway即可在飞书中对话</li>
+</ol>
+<p>社区替代方案：<code>AlexAnys/feishu-openclaw</code>提供独立bridge，不需要公网服务器和域名。</p>
+<hr />
+<h2>钉钉和企业微信：社区插件方案</h2>
+<p>钉钉和企微通过<code>openclaw-china</code>插件接入：</p>
+<div class="codehilite"><pre><span></span><code>openclaw<span class="w"> </span>plugins<span class="w"> </span>install<span class="w"> </span>@openclaw-china/channels
+openclaw<span class="w"> </span>china<span class="w"> </span>setup
+openclaw<span class="w"> </span>gateway<span class="w"> </span>restart
+</code></pre></div>
+
+<p>三步完成。支持钉钉、QQ Bot、企微（智能机器人和自建应用两种模式）。</p>
+<table>
+<thead>
+<tr>
+<th>平台</th>
+<th>状态</th>
+<th>配置难度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>钉钉</td>
+<td>可用</td>
+<td>简单</td>
+</tr>
+<tr>
+<td>QQ Bot</td>
+<td>可用</td>
+<td>简单</td>
+</tr>
+<tr>
+<td>企微（智能机器人）</td>
+<td>可用</td>
+<td>中等</td>
+</tr>
+<tr>
+<td>企微（自建应用，可连个人微信）</td>
+<td>可用</td>
+<td>中等偏高</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>WhatsApp：海外最受欢迎</h2>
+<p>WhatsApp是OpenClaw社区中最受欢迎的渠道。使用Baileys库通过QR码扫码连接，不需要WhatsApp Business API。</p>
+<ol>
+<li>运行<code>openclaw onboard</code>，选择WhatsApp渠道</li>
+<li>终端显示QR码，用手机WhatsApp扫描</li>
+<li>配对完成即可使用</li>
+</ol>
+<p><strong>注意事项：</strong><br />
+- 建议使用独立号码，不要用主号<br />
+- Gateway建议用Node而非Bun运行（Bun在WhatsApp场景下不稳定）<br />
+- Session凭证要当密码管理，过期需重新扫码</p>
+<hr />
+<h2>DM配对：防止陌生人滥用你的Agent</h2>
+<p>所有渠道默认启用DM Pairing（配对认证）：</p>
+<ol>
+<li>未知用户给你的bot发私信</li>
+<li>Agent返回一个6位配对码，消息不会被处理</li>
+<li>你在已配对的渠道中输入配对码批准该用户</li>
+</ol>
+<p><strong>为什么重要？</strong> 关闭配对意味着任何知道你Telegram/WhatsApp号码的人都可以无限制使用你的Agent——消耗你的API额度。</p>
+<p><strong>白名单跳过配对：</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># AGENTS.md中配置</span>
+<span class="nt">allowFrom</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">telegram:123456789</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">whatsapp:+8613800138000</span>
+</code></pre></div>
+
+<p>白名单中的用户发消息时直接进入对话，无需配对。</p>
+<hr />
+<h2>群组场景：@才响应</h2>
+<p>在群聊场景下，Agent默认使用<code>requireMention</code>策略——只响应<code>@Agent名称</code>的消息，忽略其他群聊内容。</p>
+<p>可以切换为<code>always</code>模式（响应所有消息），但会消耗大量token。<strong>不建议在活跃群开启always模式。</strong></p>
+<hr />
+<h2>Session隔离：私聊和群聊是两个世界</h2>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>Session行为</th>
+<th>长期记忆</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>私聊（DM）</td>
+<td>所有已配对用户的私聊共享main session</td>
+<td>加载MEMORY.md</td>
+</tr>
+<tr>
+<td>群组</td>
+<td>每个群组独立隔离session</td>
+<td>不加载</td>
+</tr>
+<tr>
+<td>跨渠道</td>
+<td>同一用户在Telegram和WhatsApp的私聊共享main session</td>
+<td>加载</td>
+</tr>
+</tbody>
+</table>
+<p>设计意图：私聊是"你和Agent的私密空间"，群组是公共场合。Agent不会在群里泄露你在私聊中说过的内容。</p>
+<hr />
+<h2>微信个人号：能做但有风险</h2>
+<p>微信没有官方Bot API。社区方案都依赖第三方逆向工程，<strong>封号风险始终存在</strong>。</p>
+<p>如果一定要接微信，建议用企微的"自建应用"模式——可以连接个人微信，相对安全。或者直接用企业微信群作为替代方案。</p>
+<hr />
+<h2>下期预告</h2>
+<p>渠道接好了，下一步是让Agent变得更强。</p>
+<p><strong>《ClawHub技能市场：13,729个技能如何让AI无所不能》</strong></p>
+<ul>
+<li>Skills系统工作原理</li>
+<li>热门Skills推荐TOP10</li>
+<li>自建Skill完整指南</li>
+<li>396个恶意技能的警示</li>
+</ul>
+<hr />
+<h2>互动时间</h2>
+<p><strong>你最想把OpenClaw接入哪个平台？</strong></p>
+<p>A. 飞书（工作场景）<br />
+B. 微信/企微（日常沟通）<br />
+C. 钉钉（办公协作）<br />
+D. Telegram/Discord（社区场景）<br />
+E. QQ（国内首选）</p>
+<p>评论区告诉我！</p>
+<hr />
+<h2>关于本系列</h2>
+<p>这是"OpenClaw从入门到精通"系列的第5篇。</p>
+<p><strong>关注【飘雪思考】公众号，不错过系列更新。</strong></p>
+<hr />
+<h2>相关资源</h2>
+<ul>
+<li>GitHub仓库：https://github.com/openclaw/openclaw</li>
+<li>官方文档：https://docs.openclaw.com</li>
+<li>ClawHub市场：https://clawhub.com</li>
+<li>完整橙皮书PDF：关注公众号回复"橙皮书"获取</li>
+</ul>
+<hr />
+<p><strong>作者：</strong> 飘雪思考<br />
+<strong>说明：</strong> 本文在Claude Code辅助下整理编写，内容准确性与时效性仅供参考。</p>
+<hr />
+<p><em>本文字数：约1,800字 | 阅读时间：约6分钟</em></p>
+    </div>
+    <nav class="post-nav"><a href="04-deployment.html">&larr; 10分钟部署你的第一个OpenClaw：保姆级教程</a><a href="06-clawhub-skills.html">ClawHub技能市场：13,729个技能如何让AI无所不能 &rarr;</a></nav>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 飘雪思考 &middot; 基于《OpenClaw橙皮书》整理 &middot; Hosted on GitHub Pages</p>
+</footer>
+
+</body>
+</html>

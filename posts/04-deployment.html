@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>10分钟部署你的第一个OpenClaw：保姆级教程 - 飘雪思考</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="inner">
+    <a href="../" class="site-title"><span>飘雪</span>思考</a>
+    <nav class="site-nav">
+      <a href="../">首页</a>
+      <a href="https://github.com/zlpx96" target="_blank">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <article>
+    <div class="article-header">
+      <a href="../" class="back">&larr; 返回文章列表</a>
+      <h1>10分钟部署你的第一个OpenClaw：保姆级教程</h1>
+      <div class="meta">飘雪思考 &middot; OpenClaw从入门到精通系列</div>
+    </div>
+    <div class="article-body">
+<h2>部署前的灵魂三问</h2>
+<p>在动手之前，先回答三个问题：</p>
+<p><strong>1. 你的技术水平？</strong><br />
+- 会用命令行 -&gt; 本地安装或Docker<br />
+- 不太会 -&gt; 国内云厂商一键部署<br />
+- 完全不会 -&gt; 扣子编程（零门槛）</p>
+<p><strong>2. 你的预算？</strong><br />
+- 零预算 -&gt; 本地安装 + 免费模型<br />
+- 10-20元/月 -&gt; 云服务器 + 国产模型<br />
+- 不差钱 -&gt; Claude Sonnet随便用</p>
+<p><strong>3. 你要接什么平台？</strong><br />
+- 飞书 -&gt; 火山引擎首选<br />
+- 企微/QQ -&gt; 腾讯云首选<br />
+- Telegram/Discord -&gt; 本地或任何云</p>
+<p>想清楚了？我们开始。</p>
+<hr />
+<h2>方案一：本地安装（开发者推荐）</h2>
+<p>两条命令搞定：</p>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 安装OpenClaw</span>
+npm<span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>openclaw@latest
+
+<span class="c1"># 初始化并安装守护进程</span>
+openclaw<span class="w"> </span>onboard<span class="w"> </span>--install-daemon
+</code></pre></div>
+
+<p><code>onboard</code>命令会引导你完成初始配置：选择模型、配置API Key、设置消息频道。<code>--install-daemon</code>会同时安装守护进程，让OpenClaw在后台持续运行。</p>
+<p><strong>系统要求：</strong><br />
+- Node.js &gt;= 22（强制）<br />
+- macOS需要Xcode Command Line Tools（<code>xcode-select --install</code>）<br />
+- Windows强烈推荐WSL2</p>
+<p><strong>一键脚本（不想手动装Node.js）：</strong></p>
+<div class="codehilite"><pre><span></span><code>curl<span class="w"> </span>-sSL<span class="w"> </span>https://get.openclaw.ai<span class="w"> </span><span class="p">|</span><span class="w"> </span>bash
+</code></pre></div>
+
+<p>脚本会自动检测系统环境、安装Node.js并完成OpenClaw安装。</p>
+<hr />
+<h2>方案二：Docker部署（需要环境隔离）</h2>
+<div class="codehilite"><pre><span></span><code><span class="c1"># 克隆仓库</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/openclaw/openclaw.git
+<span class="nb">cd</span><span class="w"> </span>openclaw
+
+<span class="c1"># 启动</span>
+docker-compose<span class="w"> </span>up<span class="w"> </span>-d
+</code></pre></div>
+
+<p><strong>关键配置：挂载目录</strong></p>
+<div class="codehilite"><pre><span></span><code><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">~/.openclaw:/root/.openclaw</span><span class="w">        </span><span class="c1"># 配置和状态数据</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">~/openclaw/workspace:/workspace</span><span class="w">    </span><span class="c1"># 工作空间</span>
+<span class="nt">ports</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;18789:18789&quot;</span><span class="w">    </span><span class="c1"># Gateway WebSocket</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;3000:3000&quot;</span><span class="w">      </span><span class="c1"># Web UI</span>
+</code></pre></div>
+
+<p><strong>不挂载这两个目录，容器重启后所有配置和对话记录都会丢失。</strong></p>
+<p>Docker镜像有四个变体：标准版（功能全）、slim（体积小）、sandbox（安全隔离）、sandbox-browser（含浏览器自动化）。一般用标准版即可。</p>
+<hr />
+<h2>方案三：国内云厂商一键部署（大多数人的首选）</h2>
+<table>
+<thead>
+<tr>
+<th>平台</th>
+<th>最低配置</th>
+<th>新用户价格</th>
+<th>内置模型</th>
+<th>难度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>阿里云</strong></td>
+<td>2C2G 40GB</td>
+<td>9.9元/月</td>
+<td>qwen3.5-plus</td>
+<td>3步</td>
+</tr>
+<tr>
+<td><strong>腾讯云</strong></td>
+<td>2C2G</td>
+<td>~17元/月</td>
+<td>需购Coding Plan</td>
+<td>3步</td>
+</tr>
+<tr>
+<td><strong>百度云</strong></td>
+<td>2C4G</td>
+<td>0.01元首月</td>
+<td>千帆模型</td>
+<td>4步</td>
+</tr>
+<tr>
+<td><strong>火山引擎</strong></td>
+<td>2C4G</td>
+<td>9.9元/月</td>
+<td>方舟模型</td>
+<td>3-4步</td>
+</tr>
+<tr>
+<td><strong>扣子编程</strong></td>
+<td>无需服务器</td>
+<td>免费起步</td>
+<td>豆包2.0</td>
+<td>2步</td>
+</tr>
+</tbody>
+</table>
+<h3>阿里云（国内社区资源最丰富）</h3>
+<ol>
+<li>进入活动页，购买预装OpenClaw镜像的轻量应用服务器</li>
+<li>安全组放通18789和3000端口，配置百炼API Key</li>
+<li>浏览器访问<code>http://你的IP:3000</code>，进入管理界面</li>
+</ol>
+<p>秒杀价9.9元/月需要抢，包年常规低至68元/年。</p>
+<h3>腾讯云（企微/QQ生态首选）</h3>
+<ol>
+<li>购买Lighthouse实例</li>
+<li>应用模板 -&gt; AI智能体 -&gt; OpenClaw，一键安装</li>
+<li>购买Coding Plan（首月7.9元），接入企微/QQ/飞书/钉钉</li>
+</ol>
+<p>四大IM全覆盖，支持"限时同价续费"。</p>
+<h3>扣子编程（零门槛方案）</h3>
+<ol>
+<li>访问code.coze.cn，点击"一键部署OpenClaw"</li>
+<li>确认后，模型/联网/生图全部默认配好</li>
+</ol>
+<p>不需要服务器、不需要写代码、不需要配环境。限制是自定义程度不如自建。</p>
+<hr />
+<h2>按场景选择</h2>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>首选</th>
+<th>理由</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>零基础想最快体验</td>
+<td>扣子编程</td>
+<td>2步部署，内置模型</td>
+</tr>
+<tr>
+<td>个人长期使用，预算敏感</td>
+<td>火山引擎</td>
+<td>19.8元/月（服务器+模型），综合最划算</td>
+</tr>
+<tr>
+<td>飞书重度用户</td>
+<td>火山引擎</td>
+<td>字节系，飞书深度集成</td>
+</tr>
+<tr>
+<td>企微/QQ生态</td>
+<td>腾讯云</td>
+<td>四大IM原生支持</td>
+</tr>
+<tr>
+<td>企业级，合规优先</td>
+<td>华为云</td>
+<td>安全合规能力最强</td>
+</tr>
+<tr>
+<td>开发者/海外用户</td>
+<td>Railway</td>
+<td>一键部署，$5/月免费额度</td>
+</tr>
+</tbody>
+</table>
+<p><strong>核心提醒：模型费用才是大头。</strong> 服务器成本普遍已降到很低（9.9~99元/年），真正的持续成本在于模型调用。选平台时重点看模型套餐价格。</p>
+<hr />
+<h2>首次配置：3个必做项</h2>
+<h3>1. Gateway认证（v2026.3.7强制要求）</h3>
+<div class="codehilite"><pre><span></span><code><span class="nt">gateway</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">auth</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">token</span><span class="w">      </span><span class="c1"># 或 password</span>
+</code></pre></div>
+
+<p><strong>不设置Gateway将拒绝启动。</strong> 这是为了修复此前30,000+未认证暴露实例的安全隐患。</p>
+<h3>2. 配置模型API Key</h3>
+<p>如果用国内云一键部署，通常已自动配好。本地和Docker部署需要手动配置。</p>
+<h3>3. 运行诊断</h3>
+<div class="codehilite"><pre><span></span><code>openclaw<span class="w"> </span>doctor
+</code></pre></div>
+
+<p>检查Node.js版本、系统依赖、Gateway连接、API Key有效性、守护进程状态。有问题会给出具体修复建议。</p>
+<hr />
+<h2>常见问题速查</h2>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>原因</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gateway启动失败</td>
+<td>未设置auth.mode</td>
+<td>配置token或password认证</td>
+</tr>
+<tr>
+<td>连不上模型</td>
+<td>API Key无效或过期</td>
+<td>检查Key，运行<code>openclaw doctor</code></td>
+</tr>
+<tr>
+<td>Docker容器数据丢失</td>
+<td>未挂载volume</td>
+<td>添加<code>~/.openclaw</code>和<code>workspace</code>挂载</td>
+</tr>
+<tr>
+<td>WhatsApp扫码失败</td>
+<td>用了Bun运行</td>
+<td>切换到Node运行Gateway</td>
+</tr>
+<tr>
+<td>端口被占用</td>
+<td>18789已被使用</td>
+<td>改端口或停止占用进程</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>版本更新</h2>
+<p>OpenClaw几乎每天都有新版本。推荐使用stable渠道：</p>
+<div class="codehilite"><pre><span></span><code>openclaw<span class="w"> </span>update<span class="w"> </span>--channel<span class="w"> </span>stable
+</code></pre></div>
+
+<p>截至2026年3月8日，推荐v2026.3.7稳定版。</p>
+<hr />
+<h2>下期预告</h2>
+<p>部署好了，下一步是让它真正有用。</p>
+<p><strong>《接入微信、飞书、钉钉：让OpenClaw成为你的工作助手》</strong></p>
+<ul>
+<li>20+平台渠道概览</li>
+<li>Telegram零门槛接入教程</li>
+<li>飞书/钉钉/QQ接入方案</li>
+<li>DM配对认证机制详解</li>
+</ul>
+<hr />
+<h2>互动时间</h2>
+<p><strong>你选择了哪种部署方式？</strong></p>
+<p>A. 本地安装（npm）<br />
+B. Docker部署<br />
+C. 国内云厂商一键部署<br />
+D. 扣子编程零门槛方案<br />
+E. 还没开始，先观望</p>
+<p>评论区分享你的部署体验！</p>
+<hr />
+<h2>关于本系列</h2>
+<p>这是"OpenClaw从入门到精通"系列的第4篇。</p>
+<p><strong>关注【飘雪思考】公众号，不错过系列更新。</strong></p>
+<hr />
+<h2>相关资源</h2>
+<ul>
+<li>GitHub仓库：https://github.com/openclaw/openclaw</li>
+<li>官方文档：https://docs.openclaw.com</li>
+<li>ClawHub市场：https://clawhub.com</li>
+<li>完整橙皮书PDF：关注公众号回复"橙皮书"获取</li>
+</ul>
+<hr />
+<p><strong>作者：</strong> 飘雪思考<br />
+<strong>说明：</strong> 本文在Claude Code辅助下整理编写，内容准确性与时效性仅供参考。</p>
+<hr />
+<p><em>本文字数：约1,700字 | 阅读时间：约6分钟</em></p>
+    </div>
+    <nav class="post-nav"><a href="03-architecture.html">&larr; OpenClaw技术架构深度解析：为什么它比其他AI Agent更强？</a><a href="05-channels.html">接入微信、飞书、钉钉：让OpenClaw成为你的工作助手 &rarr;</a></nav>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 飘雪思考 &middot; 基于《OpenClaw橙皮书》整理 &middot; Hosted on GitHub Pages</p>
+</footer>
+
+</body>
+</html>

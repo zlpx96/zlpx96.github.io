@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>模型配置指南：从GPT到国产大模型的全面支持 - 飘雪思考</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="inner">
+    <a href="../" class="site-title"><span>飘雪</span>思考</a>
+    <nav class="site-nav">
+      <a href="../">首页</a>
+      <a href="https://github.com/zlpx96" target="_blank">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <article>
+    <div class="article-header">
+      <a href="../" class="back">&larr; 返回文章列表</a>
+      <h1>模型配置指南：从GPT到国产大模型的全面支持</h1>
+      <div class="meta">飘雪思考 &middot; OpenClaw从入门到精通系列</div>
+    </div>
+    <div class="article-body">
+<h2>模型决定了你的虾有多聪明</h2>
+<p>OpenClaw本身不包含AI模型——它是一个"Agent系统"，需要外接大模型提供智能。选哪个模型、怎么配置、花多少钱，直接决定了你的Agent有多强。</p>
+<p>好消息是：OpenClaw支持几乎所有主流模型，从$25/百万token的Claude Opus到完全免费的本地Ollama，丰俭由人。</p>
+<hr />
+<h2>12+模型提供商一览</h2>
+<table>
+<thead>
+<tr>
+<th>提供商</th>
+<th>代表模型</th>
+<th>输入价/百万token</th>
+<th>定位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Anthropic</strong></td>
+<td>Claude Sonnet 4.6</td>
+<td>$3.00</td>
+<td>Agent任务表现最佳</td>
+</tr>
+<tr>
+<td><strong>OpenAI</strong></td>
+<td>GPT-5.4</td>
+<td>$2.50</td>
+<td>综合能力强</td>
+</tr>
+<tr>
+<td><strong>Google</strong></td>
+<td>Gemini 3 Pro</td>
+<td>$2.00</td>
+<td>多模态，超长上下文</td>
+</tr>
+<tr>
+<td><strong>DeepSeek</strong></td>
+<td>V3.2.2</td>
+<td>$0.14</td>
+<td>超低价，代码任务佳</td>
+</tr>
+<tr>
+<td><strong>智谱GLM</strong></td>
+<td>GLM-5</td>
+<td>$0.80</td>
+<td>国产代码能力最强</td>
+</tr>
+<tr>
+<td><strong>通义千问</strong></td>
+<td>Qwen 3.5 Max</td>
+<td>$1.20</td>
+<td>中文NLP强</td>
+</tr>
+<tr>
+<td><strong>豆包</strong></td>
+<td>Seed 2.0 Pro</td>
+<td>$0.47</td>
+<td>批量处理，低成本</td>
+</tr>
+<tr>
+<td><strong>Kimi</strong></td>
+<td>K2.5</td>
+<td>$0.60</td>
+<td>中文Agent，长上下文</td>
+</tr>
+<tr>
+<td><strong>MiniMax</strong></td>
+<td>M2.5</td>
+<td>$0.50</td>
+<td>SWE-bench 80.2%</td>
+</tr>
+<tr>
+<td><strong>百度文心</strong></td>
+<td>文心5.0</td>
+<td>~$0.58</td>
+<td>百度云生态</td>
+</tr>
+<tr>
+<td><strong>Ollama</strong></td>
+<td>本地模型</td>
+<td>免费</td>
+<td>隐私敏感，零成本</td>
+</tr>
+<tr>
+<td><strong>LM Studio</strong></td>
+<td>本地模型</td>
+<td>免费</td>
+<td>本地GUI</td>
+</tr>
+</tbody>
+</table>
+<p><strong>三种配置方式：</strong><br />
+- <strong>内置Provider</strong>：Anthropic、OpenAI、Google、智谱——只需设置API Key<br />
+- <strong>自定义Provider</strong>：DeepSeek、豆包、Kimi等——需要手动添加配置<br />
+- <strong>本地模型</strong>：Ollama、LM Studio——OpenClaw自动发现</p>
+<hr />
+<h2>国产模型：性价比之王</h2>
+<h3>DeepSeek：价格只有Claude的1/20</h3>
+<p>输入价$0.14/百万token，是Claude Sonnet的二十分之一。2026年3月发布的V4是万亿参数级旗舰，支持1M上下文。</p>
+<p><strong>注意：</strong> DeepSeek在高峰期偶尔延迟或不可用，不建议作为唯一Provider，必须搭配Fallback模型。</p>
+<h3>智谱GLM：内置支持，配置最简</h3>
+<p>OpenClaw内置了zai Provider，一条命令完成配置：</p>
+<div class="codehilite"><pre><span></span><code>openclaw<span class="w"> </span>onboard<span class="w"> </span>--auth-choice<span class="w"> </span>zai-api-key
+</code></pre></div>
+
+<p>GLM-5是开源模型中SWE-bench得分最高的，输入价仅$0.80。<strong>GLM Flash系列完全免费</strong>，适合心跳任务和简单对话。</p>
+<h3>通义千问：每天2000次免费</h3>
+<p>通过插件+OAuth接入，不需要API Key：</p>
+<div class="codehilite"><pre><span></span><code>openclaw<span class="w"> </span>plugins<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>qwen-portal-auth
+</code></pre></div>
+
+<p>Qwen 3.5 Coder专为代码场景设计，$0.22/百万token，极致性价比。</p>
+<hr />
+<h2>五种成本方案</h2>
+<h3>方案1：极致省钱（月均&lt;$5）</h3>
+<ul>
+<li>主力：DeepSeek-V3.2（$0.14/$0.28）</li>
+<li>备选：Qwen 3.5 Plus（$0.40/$1.20）</li>
+<li>心跳任务：GLM-4.5-Flash（免费）</li>
+</ul>
+<h3>方案2：国产均衡（月均$5-15）</h3>
+<ul>
+<li>主力：GLM-5（$0.80/$2.56）</li>
+<li>备选：DeepSeek-V3.2（$0.14/$0.28）</li>
+<li>推理任务：Kimi K2.5（$0.60/$3.00）</li>
+</ul>
+<h3>方案3：国际均衡（月均$10-30）</h3>
+<ul>
+<li>主力：Claude Sonnet 4.6（$3.00/$15.00）</li>
+<li>轻量：Claude Haiku 4.5或Gemini Flash</li>
+<li>复杂任务：按需升级Claude Opus 4.6</li>
+</ul>
+<h3>方案4：混合最优（月均$5-20，推荐）</h3>
+<ul>
+<li>复杂任务：Claude Sonnet 4.6</li>
+<li>日常对话：DeepSeek-V3.2</li>
+<li>心跳定时：Gemini Flash或本地Ollama</li>
+<li>Fallback链：Sonnet -&gt; Haiku -&gt; DeepSeek-V3.2</li>
+</ul>
+<h3>方案5：完全免费</h3>
+<ul>
+<li>方案A：本地Ollama + Qwen3.5-Coder:32B（需32GB内存）</li>
+<li>方案B：免费API组合——GLM-4.5-Flash + ERNIE Speed + Gemini Flash</li>
+</ul>
+<hr />
+<h2>Fallback链：最重要的省钱策略</h2>
+<p>Fallback链让OpenClaw在主模型不可用时自动切换到备用模型。更重要的是，它可以按任务复杂度路由到不同价位的模型。</p>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>模型</th>
+<th>相对成本</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>全部Claude Sonnet</td>
+<td>单一模型</td>
+<td>100%（基线）</td>
+</tr>
+<tr>
+<td>Sonnet + Haiku</td>
+<td>二级Fallback</td>
+<td>约50-60%</td>
+</tr>
+<tr>
+<td>Sonnet -&gt; Haiku -&gt; DeepSeek</td>
+<td>三级Fallback</td>
+<td><strong>约5-20%</strong></td>
+</tr>
+<tr>
+<td>纯DeepSeek</td>
+<td>单一低价</td>
+<td>约5%</td>
+</tr>
+</tbody>
+</table>
+<p><strong>从Claude Sonnet切换到三级Fallback链，可以降低80-95%的API成本。</strong> 大部分简单任务（问候、天气、简单查询）自动路由到最便宜的模型。</p>
+<hr />
+<h2>Coding Plan月卡：国内用户的捷径</h2>
+<p>不想按量付费？各厂商都推出了月卡套餐：</p>
+<table>
+<thead>
+<tr>
+<th>厂商</th>
+<th>月费</th>
+<th>包含模型</th>
+<th>亮点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>MiniMax</strong></td>
+<td>29元起</td>
+<td>M2.5</td>
+<td>无周限额，性价比最高</td>
+</tr>
+<tr>
+<td><strong>阿里百炼</strong></td>
+<td>首月7.9元</td>
+<td>Qwen+GLM+Kimi+M2.5</td>
+<td>多模型套餐</td>
+</tr>
+<tr>
+<td><strong>腾讯云</strong></td>
+<td>首月7.9元</td>
+<td>HY 2.0+GLM-5+Kimi+M2.5</td>
+<td>四大IM支持</td>
+</tr>
+<tr>
+<td><strong>火山方舟</strong></td>
+<td>首月8.91元</td>
+<td>豆包+GLM+DeepSeek+Kimi</td>
+<td>飞书集成</td>
+</tr>
+<tr>
+<td><strong>智谱</strong></td>
+<td>49元起</td>
+<td>GLM-4.7/GLM-5</td>
+<td>含MCP网络访问</td>
+</tr>
+<tr>
+<td><strong>Kimi</strong></td>
+<td>49元起</td>
+<td>Kimi K2.5</td>
+<td>Token计量</td>
+</tr>
+</tbody>
+</table>
+<p><strong>注意：</strong> 智谱2026年2月涨价30%并取消首购优惠；Kimi限个人使用，禁止企业开发；多数云平台续费按5折，非原价。</p>
+<hr />
+<h2>预算上限：必须设置</h2>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;agents&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;defaults&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;budget&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;maxTokensPerDay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">500000</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;maxCostPerDay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">5.00</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p><strong>强烈建议所有用户设置每日预算上限。</strong> 即使不差钱，$5/天的限制也能在Agent进入推理循环时保护你的钱包。</p>
+<p>社区恐怖故事：用户设置了邮件处理定时任务，睡前一切正常，醒来发现API账单飙到$1,100。原因：Agent在处理邮件时进入循环推理，整夜不停调用API。</p>
+<hr />
+<h2>下期预告</h2>
+<p>省钱很重要，安全更重要。</p>
+<p><strong>《OpenClaw安全事件簿：那些踩过的坑和防范指南》</strong></p>
+<ul>
+<li>CVE-2026-25253 RCE漏洞回顾</li>
+<li>ClawHavoc供应链攻击分析</li>
+<li>谷歌封号风波始末</li>
+<li>$1,100账单的恐怖故事</li>
+<li>5个安全最佳实践</li>
+</ul>
+<hr />
+<h2>互动时间</h2>
+<p><strong>你选择了哪个模型方案？</strong></p>
+<p>A. 极致省钱（DeepSeek为主）<br />
+B. 国产均衡（GLM-5为主）<br />
+C. 国际均衡（Claude Sonnet为主）<br />
+D. 混合最优（多模型Fallback）<br />
+E. 完全免费（本地Ollama）</p>
+<p>评论区分享你的选择和月费！</p>
+<hr />
+<h2>关于本系列</h2>
+<p>这是"OpenClaw从入门到精通"系列的第7篇。</p>
+<p><strong>关注【飘雪思考】公众号，不错过系列更新。</strong></p>
+<hr />
+<h2>相关资源</h2>
+<ul>
+<li>GitHub仓库：https://github.com/openclaw/openclaw</li>
+<li>官方文档：https://docs.openclaw.com</li>
+<li>ClawHub市场：https://clawhub.com</li>
+<li>完整橙皮书PDF：关注公众号回复"橙皮书"获取</li>
+</ul>
+<hr />
+<p><strong>作者：</strong> 飘雪思考<br />
+<strong>说明：</strong> 本文在Claude Code辅助下整理编写，内容准确性与时效性仅供参考。</p>
+<hr />
+<p><em>本文字数：约1,650字 | 阅读时间：约6分钟</em></p>
+    </div>
+    <nav class="post-nav"><a href="06-clawhub-skills.html">&larr; ClawHub技能市场：13,729个技能如何让AI无所不能</a><a href="08-security.html">OpenClaw安全事件簿：那些踩过的坑和防范指南 &rarr;</a></nav>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 飘雪思考 &middot; 基于《OpenClaw橙皮书》整理 &middot; Hosted on GitHub Pages</p>
+</footer>
+
+</body>
+</html>

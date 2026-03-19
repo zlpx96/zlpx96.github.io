@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClawHub技能市场：13,729个技能如何让AI无所不能 - 飘雪思考</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="inner">
+    <a href="../" class="site-title"><span>飘雪</span>思考</a>
+    <nav class="site-nav">
+      <a href="../">首页</a>
+      <a href="https://github.com/zlpx96" target="_blank">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <article>
+    <div class="article-header">
+      <a href="../" class="back">&larr; 返回文章列表</a>
+      <h1>ClawHub技能市场：13,729个技能如何让AI无所不能</h1>
+      <div class="meta">飘雪思考 &middot; OpenClaw从入门到精通系列</div>
+    </div>
+    <div class="article-body">
+<h2>Skills是OpenClaw的超能力</h2>
+<p>如果把OpenClaw比作一部手机，Skills就是App Store里的应用。</p>
+<p>没有Skills，OpenClaw只有4个基本工具（Read、Write、Edit、Bash）。装上Skills，它可以发邮件、管日历、操作浏览器、搜索网页、生成图片、审查代码。</p>
+<p>截至2026年3月8日，ClawHub上注册了13,729个Skills。但这个数字需要打个折扣——后面会讲为什么。</p>
+<hr />
+<h2>Skills是怎么工作的</h2>
+<p>OpenClaw按三级优先级加载Skills：</p>
+<table>
+<thead>
+<tr>
+<th>优先级</th>
+<th>位置</th>
+<th>作用域</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>最高</strong></td>
+<td><code>&lt;workspace&gt;/skills/</code></td>
+<td>仅当前项目</td>
+</tr>
+<tr>
+<td><strong>中等</strong></td>
+<td><code>~/.openclaw/skills/</code></td>
+<td>全局生效</td>
+</tr>
+<tr>
+<td><strong>最低</strong></td>
+<td>内置Skills</td>
+<td>随版本发布</td>
+</tr>
+</tbody>
+</table>
+<p>同名Skill高优先级覆盖低优先级。你可以在项目级"重写"一个内置Skill的行为，不影响其他项目。</p>
+<p><strong>加载过程：</strong><br />
+1. 扫描三级目录，读取每个Skill的<code>SKILL.md</code><br />
+2. 注入环境变量（如<code>GITHUB_TOKEN</code>），缺少必要变量的Skill被静默跳过<br />
+3. 将所有可用Skill的描述注入system prompt——这是模型"知道自己能干什么"的关键步骤<br />
+4. Skill执行完毕后恢复原始环境，防止互相干扰</p>
+<hr />
+<h2>必装TOP 10</h2>
+<table>
+<thead>
+<tr>
+<th>排名</th>
+<th>Skill名称</th>
+<th>下载量</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Gmail/Google</strong></td>
+<td>32K+</td>
+<td>邮件收发、日历管理、Google Docs读写。基础设施级Skill</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Agent Browser</strong></td>
+<td>高</td>
+<td>浏览器自动化：登录、填表、截图、导出PDF</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Summarize</strong></td>
+<td>高</td>
+<td>自动摘要：视频、网页、邮件内容。日常使用频率最高</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>GitHub</strong></td>
+<td>高</td>
+<td>仓库管理、Issue处理、PR审查</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Web Search</strong></td>
+<td>高</td>
+<td>网页搜索，让Agent能访问实时信息</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Claude Code</strong></td>
+<td>中</td>
+<td>通过MCP协议桥接Claude Code能力</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>File Manager</strong></td>
+<td>中</td>
+<td>本地文件读写、移动、重命名</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>Calendar</strong></td>
+<td>中</td>
+<td>日程查看和管理</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>Translator</strong></td>
+<td>中</td>
+<td>多语言翻译</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>Image Gen</strong></td>
+<td>中</td>
+<td>AI图片生成，集成DALL-E等后端</td>
+</tr>
+</tbody>
+</table>
+<p><strong>实用建议：不要一次装太多。</strong> 每个Skill都会增加system prompt长度，消耗上下文窗口。建议从TOP 10中选3-5个开始，逐步扩展。</p>
+<hr />
+<h2>55个内置Skills一览</h2>
+<p>OpenClaw出厂自带55个Skills，覆盖六大类：</p>
+<ul>
+<li><strong>通讯社交</strong>：Discord、Slack、iMessage、WhatsApp CLI、语音通话</li>
+<li><strong>笔记知识</strong>：Obsidian、Notion、Apple Notes、Bear Notes、Trello、Things</li>
+<li><strong>开发工具</strong>：Coding Agent、GitHub、gh-issues、tmux</li>
+<li><strong>媒体处理</strong>：Spotify、视频帧提取、OpenAI图片生成、GIF</li>
+<li><strong>AI模型</strong>：Gemini、OpenAI Whisper语音识别、TTS语音合成</li>
+<li><strong>搜索浏览</strong>：URL提取、摘要、博客监控、Google搜索</li>
+<li><strong>系统工具</strong>：1Password、健康检查、会话日志</li>
+<li><strong>智能家居</strong>：Philips Hue灯光控制</li>
+<li><strong>生态工具</strong>：ClawHub客户端、Skill创建器、MCP桥接器</li>
+</ul>
+<p>内置Skills无需安装，开箱即用。</p>
+<hr />
+<h2>自建Skill：只需要一个文件</h2>
+<p>最简单的Skill只需要一个<code>SKILL.md</code>：</p>
+<div class="codehilite"><pre><span></span><code>my-skill/
+└── SKILL.md    # 唯一必须文件
+</code></pre></div>
+
+<p>SKILL.md定义了Skill的名称、描述、触发条件、使用指令和所需环境变量。示例：</p>
+<div class="codehilite"><pre><span></span><code><span class="gh"># 工作日报生成器</span>
+
+<span class="gu">## Description</span>
+帮助用户进行每日工作总结，生成结构化日报。
+
+<span class="gu">## Trigger</span>
+当用户提到&quot;日报&quot;、&quot;工作总结&quot;、&quot;今日汇报&quot;时激活。
+
+<span class="gu">## Instructions</span>
+<span class="k">1.</span> 询问用户今天完成了哪些工作
+<span class="k">2.</span> 按项目分类整理
+<span class="k">3.</span> 标记每个任务的状态（完成/进行中/阻塞）
+<span class="k">4.</span> 生成markdown格式日报
+<span class="k">5.</span> 保存到~/reports/YYYY-MM-DD.md
+</code></pre></div>
+
+<p><strong>安装方式：</strong><br />
+- 项目级：放入<code>&lt;workspace&gt;/skills/my-skill/</code><br />
+- 全局：放入<code>~/.openclaw/skills/my-skill/</code></p>
+<p><strong>发布到ClawHub：</strong></p>
+<div class="codehilite"><pre><span></span><code>openclaw<span class="w"> </span>clawhub<span class="w"> </span>login
+openclaw<span class="w"> </span>clawhub<span class="w"> </span>publish<span class="w"> </span>./my-skill
+</code></pre></div>
+
+<p>项目级Skill很适合团队协作——放在Git仓库的<code>skills/</code>目录，团队成员clone后自动获得相同的Agent能力。</p>
+<hr />
+<h2>13,729的真相：一半是垃圾</h2>
+<p>现在说那个需要打折扣的数字。</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>数据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ClawHub总注册</td>
+<td>13,729</td>
+</tr>
+<tr>
+<td>精选Skills（awesome list筛选）</td>
+<td>5,494</td>
+</tr>
+<tr>
+<td>被过滤的（垃圾/重复/恶意）</td>
+<td>6,940</td>
+</tr>
+<tr>
+<td>标记为恶意</td>
+<td>800+</td>
+</tr>
+</tbody>
+</table>
+<p>社区项目<code>awesome-openclaw-skills</code>（31.4K Stars）从13,729个Skills中只精选了5,494个。剩下的大部分是垃圾、重复或低质量内容。</p>
+<p><strong>更危险的是：800+个被确认为恶意。</strong></p>
+<hr />
+<h2>ClawHavoc：供应链攻击事件</h2>
+<p>2026年1月底到2月初，一场名为ClawHavoc的供应链攻击爆发。</p>
+<p><strong>攻击手法：</strong><br />
+1. 上传看起来专业的Skill（名字如"advanced-code-review"、"smart-scheduler"）<br />
+2. 用户安装后，Skill建议安装一个"辅助Agent"以增强功能<br />
+3. 实际植入了AMOS（Atomic macOS Stealer）信息窃取木马<br />
+4. <strong>更危险的是：攻击直接篡改SOUL.md和MEMORY.md</strong>——你的Agent被"洗脑"，核心行为规则被改写</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>数据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>初始确认恶意Skills</td>
+<td>341（约12%）</td>
+</tr>
+<tr>
+<td>后续发现</td>
+<td>800+（约20%）</td>
+</tr>
+<tr>
+<td>受影响设备</td>
+<td>135,000+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>防范建议：</strong></p>
+<ol>
+<li><strong>安装前检查源码</strong>，看GitHub仓库，警惕需要安装"辅助Agent"的Skill</li>
+<li><strong>使用SecureClaw扫描</strong>：<code>npm install -g secureclaw &amp;&amp; secureclaw scan ~/.openclaw/skills/</code></li>
+<li><strong>参考精选列表</strong>而非在ClawHub随意搜索</li>
+<li><strong>定期检查SOUL.md和MEMORY.md</strong>，发现异常内容立即回滚</li>
+</ol>
+<p><strong>核心认知：</strong> Skills本质上是受信任的代码。一旦安装，它拥有和OpenClaw实例相同的权限——能访问你的邮件、日历、消息和文件系统。没有沙箱隔离，没有权限分级。</p>
+<hr />
+<h2>下期预告</h2>
+<p>Skills让Agent有了能力，但模型决定了它有多聪明。</p>
+<p><strong>《模型配置指南：从GPT到国产大模型的全面支持》</strong></p>
+<ul>
+<li>12+模型提供商总览</li>
+<li>国产模型接入教程</li>
+<li>五种成本方案推荐</li>
+<li>Failover链配置策略</li>
+</ul>
+<hr />
+<h2>互动时间</h2>
+<p><strong>你最想用哪个Skill？</strong></p>
+<p>A. Gmail/Google（邮件自动化）<br />
+B. Agent Browser（浏览器操作）<br />
+C. Web Search（实时搜索）<br />
+D. 自建Skill（定制化需求）</p>
+<p>评论区聊聊！</p>
+<hr />
+<h2>关于本系列</h2>
+<p>这是"OpenClaw从入门到精通"系列的第6篇。</p>
+<p><strong>关注【飘雪思考】公众号，不错过系列更新。</strong></p>
+<hr />
+<h2>相关资源</h2>
+<ul>
+<li>GitHub仓库：https://github.com/openclaw/openclaw</li>
+<li>官方文档：https://docs.openclaw.com</li>
+<li>ClawHub市场：https://clawhub.com</li>
+<li>完整橙皮书PDF：关注公众号回复"橙皮书"获取</li>
+</ul>
+<hr />
+<p><strong>作者：</strong> 飘雪思考<br />
+<strong>说明：</strong> 本文在Claude Code辅助下整理编写，内容准确性与时效性仅供参考。</p>
+<hr />
+<p><em>本文字数：约1,750字 | 阅读时间：约6分钟</em></p>
+    </div>
+    <nav class="post-nav"><a href="05-channels.html">&larr; 接入微信、飞书、钉钉：让OpenClaw成为你的工作助手</a><a href="07-model-config.html">模型配置指南：从GPT到国产大模型的全面支持 &rarr;</a></nav>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 飘雪思考 &middot; 基于《OpenClaw橙皮书》整理 &middot; Hosted on GitHub Pages</p>
+</footer>
+
+</body>
+</html>

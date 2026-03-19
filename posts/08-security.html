@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenClaw安全事件簿：那些踩过的坑和防范指南 - 飘雪思考</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="inner">
+    <a href="../" class="site-title"><span>飘雪</span>思考</a>
+    <nav class="site-nav">
+      <a href="../">首页</a>
+      <a href="https://github.com/zlpx96" target="_blank">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <article>
+    <div class="article-header">
+      <a href="../" class="back">&larr; 返回文章列表</a>
+      <h1>OpenClaw安全事件簿：那些踩过的坑和防范指南</h1>
+      <div class="meta">飘雪思考 &middot; OpenClaw从入门到精通系列</div>
+    </div>
+    <div class="article-body">
+<h2>不到4个月，至少5起重大安全事件</h2>
+<p>OpenClaw从2025年11月创建到2026年3月，不到4个月的时间里，至少经历了5起重大安全事件。</p>
+<p>创始人Peter Steinberger自己都承认：</p>
+<blockquote>
+<p>"This is all vibe code. Prompt injection hasn't been solved. There are absolute risks."</p>
+<p>这全是vibe code。Prompt injection没有被解决。存在绝对的风险。</p>
+</blockquote>
+<p>"养虾"很有趣，但如果你不了解这些风险，你可能会付出真金白银的代价。</p>
+<hr />
+<h2>事件一：CVE-2026-25253——你的服务器门户大开</h2>
+<p>2026年2月初，安全研究人员发现了一个CVSS评分8.8/10的远程代码执行（RCE）漏洞。</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>详情</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CVE编号</td>
+<td>CVE-2026-25253</td>
+</tr>
+<tr>
+<td>类型</td>
+<td>远程代码执行（RCE）</td>
+</tr>
+<tr>
+<td>机制</td>
+<td>WebSocket origin header绕过，攻击者可伪造origin连接暴露的Gateway</td>
+</tr>
+<tr>
+<td>影响范围</td>
+<td>所有暴露在公网且未配置认证的OpenClaw实例</td>
+</tr>
+<tr>
+<td>状态</td>
+<td>已修复（v2026.3.2）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>这意味着什么？</strong> 攻击者可以远程在你的服务器上执行任何命令——读取文件、安装恶意软件、窃取API Key。</p>
+<p>安全研究人员通过互联网扫描发现：<strong>超过30,000个OpenClaw实例暴露在公网上且没有配置任何认证。</strong> Gateway端口（默认18789）对任何人开放。</p>
+<p>如果你还在使用v2026.3.2之前的版本，<strong>立即升级</strong>。</p>
+<hr />
+<h2>事件二：ClawHavoc——技能市场沦陷</h2>
+<p>2026年1月底到2月初，一场精心策划的供应链攻击爆发。安全公司Koi Security将其命名为ClawHavoc。</p>
+<p><strong>攻击时间线：</strong></p>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>事件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1月27日</td>
+<td>首个恶意Skill出现在ClawHub，伪装成专业工具</td>
+</tr>
+<tr>
+<td>1月28-30日</td>
+<td>攻击者快速大量上传恶意Skills，利用ClawHub缺乏审核机制</td>
+</tr>
+<tr>
+<td>1月31日</td>
+<td>攻击全面爆发，多个用户报告异常行为</td>
+</tr>
+<tr>
+<td>2月1日</td>
+<td>Koi Security正式命名"ClawHavoc"</td>
+</tr>
+</tbody>
+</table>
+<p><strong>规模有多大？</strong></p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>数据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>初始确认恶意Skills</td>
+<td>341（约12%）</td>
+</tr>
+<tr>
+<td>后续发现</td>
+<td>800+（约20%）</td>
+</tr>
+<tr>
+<td>受影响设备</td>
+<td>135,000+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>攻击手法极其狡猾：</strong></p>
+<ol>
+<li>上传专业外观的Skill（名字如"advanced-code-review"、"smart-scheduler"）</li>
+<li>安装后建议用户安装"辅助Agent"以增强功能</li>
+<li>实际植入AMOS（Atomic macOS Stealer）信息窃取木马</li>
+<li><strong>最致命的一手：直接篡改SOUL.md和MEMORY.md</strong></li>
+</ol>
+<p>篡改SOUL.md意味着你的Agent被"洗脑"——核心行为规则被改写。在之后所有交互中，Agent可能在你不知情的情况下执行恶意操作。</p>
+<hr />
+<h2>事件三：Anthropic封杀OAuth</h2>
+<p>2026年1月，Anthropic官方禁止Claude Pro/Max订阅账号通过OAuth连接OpenClaw。</p>
+<p>很多用户收到账号警告甚至直接被锁定，部分用户的订阅被取消且无法恢复。</p>
+<p><strong>现在唯一合法的连接方式：Anthropic API Key（按量付费）。</strong></p>
+<p>如果你还在用OAuth方式连接Claude，请立即切换到API Key，否则可能面临封号风险。</p>
+<hr />
+<h2>事件四：谷歌封号风波</h2>
+<p>2026年2月初，谷歌大规模封禁OpenClaw用户的Google账号。</p>
+<p>有用户在GitHub Issue #14203中留言：</p>
+<blockquote>
+<p>"Spending $250/month on Gemini API, banned with zero warning."</p>
+<p>每月在Gemini API上花$250，零警告被封。</p>
+</blockquote>
+<p>封禁范围包括Gmail、Google Drive、Google Calendar——<strong>所有Google服务全部中断</strong>。</p>
+<p>原因：部分用户的OpenClaw实例通过Gmail Skill大量调用Google API，触发了滥用检测。</p>
+<p><strong>防范建议：</strong><br />
+1. 使用专用Google Workspace账号，<strong>不要用个人主账号</strong><br />
+2. 控制API调用频率<br />
+3. 备份重要数据</p>
+<hr />
+<h2>事件五：$1,100的恐怖账单</h2>
+<p>社区中最频繁出现的"恐怖故事"：一觉醒来，API账单飙到四位数。</p>
+<p><strong>真实案例：</strong> 用户设置了邮件处理定时任务，睡前一切正常。醒来发现API账单飙到$1,100。原因：Agent在处理邮件时进入循环推理，整夜不停调用API。</p>
+<p><strong>为什么OpenClaw的成本容易失控？</strong></p>
+<ul>
+<li>每次Agent思考涉及多轮推理：一个简单任务可能触发5-10次API调用</li>
+<li>Skills描述注入system prompt，增加每次请求的输入token</li>
+<li>记忆系统（MEMORY.md + Daily Logs）给每次请求附加上下文</li>
+<li>Agent 24/7运行，定时任务持续触发API调用</li>
+<li><strong>多轮思考 + 多工具调用的token消耗可以是传统聊天的数十倍甚至上百倍</strong></li>
+</ul>
+<hr />
+<h2>5个安全最佳实践</h2>
+<h3>1. 永远不要暴露到公网</h3>
+<p>Gateway默认绑定localhost是有原因的。如果你需要远程访问，用Tailscale、Cloudflare Tunnel或VPN。<strong>不要直接把18789端口开到公网。</strong></p>
+<h3>2. 设置Gateway认证</h3>
+<p>v2026.3.7已经强制要求设置<code>gateway.auth.mode</code>。没有认证的Gateway将拒绝启动。</p>
+<div class="codehilite"><pre><span></span><code><span class="nt">gateway</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">auth</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">token</span><span class="w">    </span><span class="c1"># 或 password</span>
+</code></pre></div>
+
+<h3>3. 审查Skills源码</h3>
+<p>不要盲目安装ClawHub上的Skills。安装前查看GitHub仓库源码，警惕需要安装"辅助Agent"的Skill。使用SecureClaw扫描：</p>
+<div class="codehilite"><pre><span></span><code>npm<span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>secureclaw
+secureclaw<span class="w"> </span>scan<span class="w"> </span>~/.openclaw/skills/
+</code></pre></div>
+
+<h3>4. 设置每日预算上限</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;agents&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;defaults&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;budget&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;maxCostPerDay&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">5.00</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>即使不差钱，也要设上限。Agent进入推理循环时，没有限制就意味着无限烧钱。</p>
+<h3>5. 定期检查SOUL.md和MEMORY.md</h3>
+<p>如果发现你没写过的内容，立即回滚并审查所有已安装Skills。ClawHavoc攻击的核心手段就是篡改这两个文件。</p>
+<hr />
+<h2>成本控制速查</h2>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>设置每日预算上限</td>
+<td>防止单日失控</td>
+</tr>
+<tr>
+<td>使用三级Fallback链</td>
+<td>降低80-95%API成本</td>
+</tr>
+<tr>
+<td>心跳任务用免费模型</td>
+<td>GLM Flash / Gemini Flash</td>
+</tr>
+<tr>
+<td>不要在活跃群开always模式</td>
+<td>减少无效token消耗</td>
+</tr>
+<tr>
+<td>控制Skills数量</td>
+<td>减少system prompt长度</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Fallback链示例：</strong> Claude Sonnet -&gt; Claude Haiku -&gt; DeepSeek-V3.2。大部分简单任务自动路由到最便宜的模型，月费从三位数压缩到两位数甚至个位数。</p>
+<hr />
+<h2>总结：养虾需谨慎</h2>
+<p>OpenClaw是一个强大的工具，但强大也意味着风险：</p>
+<ul>
+<li><strong>安全风险</strong>：RCE漏洞、供应链攻击、账号封禁</li>
+<li><strong>成本风险</strong>：多轮推理导致token消耗失控</li>
+<li><strong>隐私风险</strong>：Agent能访问你的邮件、文件、消息</li>
+</ul>
+<p><strong>养虾很好玩，但请系好安全带。</strong></p>
+<hr />
+<h2>互动时间</h2>
+<p><strong>你遇到过哪些"养虾"翻车经历？</strong></p>
+<p>A. API账单超预期<br />
+B. 遇到过恶意Skill<br />
+C. 被平台封号<br />
+D. 暂时还没翻车<br />
+E. 因为安全顾虑还没开始养</p>
+<p>评论区分享你的经历，帮其他养虾人避坑！</p>
+<hr />
+<h2>关于本系列</h2>
+<p>这是"OpenClaw从入门到精通"系列的第8篇，也是核心系列的最后一篇。</p>
+<p><strong>关注【飘雪思考】公众号，不错过后续更新。</strong></p>
+<p>如果你跟着本系列走到了这里，你已经了解了OpenClaw的方方面面：从概念到架构，从部署到接入，从Skills到模型，从安全到成本。</p>
+<p><strong>去养一只属于你的龙虾吧。</strong></p>
+<hr />
+<h2>相关资源</h2>
+<ul>
+<li>GitHub仓库：https://github.com/openclaw/openclaw</li>
+<li>官方文档：https://docs.openclaw.com</li>
+<li>ClawHub市场：https://clawhub.com</li>
+<li>完整橙皮书PDF：关注公众号回复"橙皮书"获取</li>
+</ul>
+<hr />
+<p><strong>作者：</strong> 飘雪思考<br />
+<strong>说明：</strong> 本文在Claude Code辅助下整理编写，内容准确性与时效性仅供参考。</p>
+<hr />
+<p><em>本文字数：约1,900字 | 阅读时间：约7分钟</em></p>
+    </div>
+    <nav class="post-nav"><a href="07-model-config.html">&larr; 模型配置指南：从GPT到国产大模型的全面支持</a><a href="09-moltbook.html">Moltbook：AI Agent的社交网络实验 &rarr;</a></nav>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <p>&copy; 2026 飘雪思考 &middot; 基于《OpenClaw橙皮书》整理 &middot; Hosted on GitHub Pages</p>
+</footer>
+
+</body>
+</html>
