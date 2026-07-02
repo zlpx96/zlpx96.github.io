@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>方块消除</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0f0f1a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      max-height: 100vh;
+      max-width: 100vw;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas"></canvas>
+  <script type="module">
+    import { Game } from './src/game.js'
+
+    const canvas = document.getElementById('gameCanvas')
+    canvas.width = 384
+    canvas.height = 680
+    const game = new Game(canvas)
+    game.start()
+  </script>
+</body>
+</html>
